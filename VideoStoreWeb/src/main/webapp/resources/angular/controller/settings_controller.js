@@ -1,5 +1,3 @@
-/*DSADADS*/
-
 function SettingsController(module, controllerName, serviceName) {
     module.controller(controllerName, ['$scope', '$timeout', serviceName, function ($scope, $timeout, Service) {
 
