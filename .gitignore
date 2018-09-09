@@ -26,7 +26,6 @@ VideoStoreApi/VideoStoreApi.iml
 VideoStoreApi/src/test/
 VideoStoreApi/target/
 VideoStoreWeb/VideoStoreWeb.iml
-VideoStoreWeb/src/main/resources/
 VideoStoreWeb/src/test/
 VideoStoreWeb/target/
 src/
