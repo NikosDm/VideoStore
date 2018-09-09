@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Edit Movie</title>
+</head>
+<body background="/resources/img/layout_media_movies.jpg">
+<div class="container" ng-app="MovieApp" ng-controller="MovieController as MovieCtrl">
+    <div id="model-loader" class="loader" ng-show="Loaders.mediaLoader"></div>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID == 0 &amp;&amp; !Loaders.mediaLoader">Create Movie</h2>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID != 0 &amp;&amp; !Loaders.mediaLoader">Details of Movie: {{SelectedModel.mediaCode + " - " + SelectedModel.mediaTitle}} </h2>
+    <div class="panel panel-primary" style="margin-bottom: 30px;" ng-show="!Loaders.mediaLoader">
+        <div class="panel-heading">Movie Details</div>
+        <div class="panel-body">
+            <form class="form-inline" method="post" role="form" name="MediaForm" ng-submit="updateSelectedMedia()" novalidate="novalidate">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="thumbnail">
+                            <img style="max-width: 300px; max-height: 240px;" ng-src="{{SelectedModel.mediaImageBase64}}" />
+                            <div class="caption">
+                                <input file-read="SelectedModel.mediaImageBase64" class="btn btn-default" style="margin: 0 auto; width: 50%;" type="file" accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="MediaCode">Movie Code:</label>
+                        <input type="text" class="form-control" name="MediaCode" style="width: 90%;" id="MediaCode" ng-model="SelectedModel.mediaCode" required="required"/>
+                        <span style="color: red;" ng-show="MovieForm.$submitted &amp;&amp; MovieForm.MediaCode.$error.required">Movie Code is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 5%;">
+                        <label for="MediaTitle">Movie Title:</label>
+                        <input type="text" class="form-control" style="width: 90%;" name="MediaTitle" id="MediaTitle" ng-model="SelectedModel.mediaTitle" required="required"/>
+                        <span style="color: red;" ng-show="MovieForm.$submitted &amp;&amp; MovieForm.MediaTitle.$error.required">Movie Title is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-10">
+                        <label for="MediaDescription">Description:</label>
+                        <textarea rows="10" cols="70" style="width: 90%; display: block;" class="form-control" id="MediaDescription" ng-model="SelectedModel.mediaDescription"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-4">
+                        <label for="Director">Director:</label>
+                        <input type="text" style="width: 90%;" class="form-control" name="Director" id="Director" ng-model="SelectedModel.director" required="required"/>
+                        <span style="color: red;" ng-show="MovieForm.$submitted &amp;&amp; MovieForm.Director.$error.required">Director of Movie is required</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="Price">Price:</label>
+                        <input type="number" style="width: 90%; display: block;" class="form-control" id="Price" name="Price" ng-model="SelectedModel.price" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Price.$error.required"></span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="MediaReleaseDate">ReleaseDate:</label>
+                        <input type="date" style="width: 90%;" class="form-control" name="MediaReleaseDate" id="MediaReleaseDate" ng-model="SelectedModel.releaseDate" required="required"/>
+                        <span style="color: red;" ng-show="MovieForm.$submitted &amp;&amp; MovieForm.MediaReleaseDate.$error.required">Release Date of Movie is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-6">
+                        <label for="Category">Categories:</label>
+                        <select multiple="multiple" style="width: 90%;" class="custom-select" id="Category" ng-model="SelectedModel.movieCategories" required="required"></select>
+                        <span style="color: red;"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="Language">Languages:</label>
+                        <select multiple="multiple" style="width: 90%;" class="custom-select" id="Language" ng-model="SelectedModel.movieLanguages" required="required"></select>
+                        <span style="color: red;"></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px; float: right; margin-right: 5%;">
+                    <input type="submit" name="SaveButton" id="SaveButton" class="btn btn-primary" value="Save" ng-if="!Loaders.saveLoader" />
+                    <div id="save-loader" class="loader" ng-if="Loaders.saveLoader"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var MediaID = /*[[${mediaID}]]*/ 0;
+    var MovieCategoriesRaw = /*[[${movieCategories}]]*/ [];
+    var MovieLanguagesRaw = /*[[${movieLanguages}]]*/ [];
+    var MovieCategories = $.map(MovieCategoriesRaw, function(category) {
+        return { id: category.movieCategoryID, text: category.movieCategoryName };
+    });
+    var MovieLanguages = $.map(MovieLanguagesRaw, function(language) {
+        return { id: language.movieLanguageID, text: language.movieLanguageName };
+    });
+
+    var params = {
+        searchUrl: '/api/MovieApi/GetMovie',
+        updateSelected: '/api/MovieApi/UpdateMovie'
+    };
+
+    $('#Language').select2({
+        placeholder: 'Select Movie Languages..',
+        data: MovieLanguages,
+        multiple: true
+    });
+
+    $('#Category').select2({
+        placeholder: 'Select Movie Categories..',
+        data: MovieCategories,
+        multiple: true
+    });
+
+    function RefreshSelectors(){
+        $('.custom-select').trigger('change');
+    }
+
+    var module = angular.module('MovieApp', []).config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension):/);
+    }]);
+    module.value('params', params);
+    module.value('type', 2);
+    module.value('mediaID', MediaID);
+    module.value('afterEventFunction', RefreshSelectors());
+    MediaService(module, 'MovieService');
+    MediaController(module, 'MovieController', 'MovieService');
+
+</script>

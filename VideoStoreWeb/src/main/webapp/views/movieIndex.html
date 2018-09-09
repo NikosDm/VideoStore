@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:data="https://github.com/mxab/thymeleaf-extras-data-attribute"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Movies</title>
+</head>
+<body background="/resources/img/layout_media_movies.jpg">
+<div class="container" ng-app="MovieApp" ng-controller="MovieController as MovieCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Movie List</div>
+        <div class="panel-body">
+            <div id="list-loader" class="loader" ng-show="MediaListLoader"></div>
+            <div class="row" ng-show="!MediaListLoader">
+                <button id="NewMovie" class="btn btn-active" type="button" style="margin-left: 15px;" ng-click="AddOrEditMedia(0)">
+                    Add New Movie
+                </button>
+            </div>
+            <div class="table-responsive" ng-show="!MediaListLoader" style="margin-top: 10px;">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Title</th>
+                        <th>Release Date</th>
+                        <th>Director</th>
+                        <th>Languages</th>
+                        <th>Categories</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="movie in ModelList">
+                        <td ng-bind="movie.mediaCode"></td>
+                        <td ng-bind="movie.mediaTitle"></td>
+                        <td ng-bind="SetDateFormat(movie.releaseDate)"></td>
+                        <td ng-bind="movie.director"></td>
+                        <td ng-bind="movie.languages"></td>
+                        <td ng-bind="movie.categories"></td>
+                        <td>
+                            <a class="btn btn-success" ng-click="AddOrEditMedia(movie.mediaID)" type="button">Edit</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#DeleteModal" ng-click="InitializeDeleteModal(movie.mediaID, movie.mediaCode, movie.mediaTitle)">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Movie</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" ng-bind-html="SelectedDeleteMedia.MediaDescription">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteData(SelectedDeleteMedia.MediaID)">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    var params = {
+        searchUrl: '/api/MovieApi/ListMovies',
+        updateListUrl: '/api/MovieApi/UpdateMovies',
+        updateSelected: '/api/MovieApi/UpdateGridMovie',
+        deleteSelected: '/api/MovieApi/DeleteMovie'
+    };
+
+    var module = angular.module('MovieApp', ['ngSanitize']);
+    module.value('params', params);
+    module.value('type', 2);
+    GridService(module, 'MovieService');
+    GridController(module, 'MovieController', 'MovieService');
+
+</script>

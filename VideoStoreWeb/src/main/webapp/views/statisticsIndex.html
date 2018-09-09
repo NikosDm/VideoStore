@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Statistics</title>
+    <style>
+        .canvasjs-chart-credit {
+            display: none;
+        }
+    </style>
+</head>
+<body background="resources/img/loggedin_background_image.jpg">
+<div class="container" ng-app="StatisticsApp" ng-controller="StatisticsController as StatCtrl">
+    <div id="model-loader" class="loader" ng-show="statisticsLoader"></div>
+    <div class="panel panel-primary" ng-if="!statisticsLoader">
+        <div class="panel-heading">
+            <h3 class="panel-title">Statistics</h3>
+        </div>
+        <div class="panel-body">
+            <div id="MediaPie" canvas-pie="MediaStatistics" style="width: 45%; height: 300px;display: inline-block;"></div>
+            <div id="UsersPie" canvas-pie="UserRoleStatistics" style="width: 45%; height: 300px;display: inline-block;"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var module = angular.module('StatisticsApp', []);
+    StatisticsService(module, 'StatisticsService');
+    StatisticsController(module, 'StatisticsController', 'StatisticsService');
+
+</script>

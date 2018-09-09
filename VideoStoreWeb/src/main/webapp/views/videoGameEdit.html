@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Edit Video Game</title>
+</head>
+<body background="/resources/img/layout_media_video_games.jpg">
+<div class="container" ng-app="VideoGameApp" ng-controller="VideoGameController as VideoGameCtrl">
+    <div id="model-loader" class="loader" ng-show="Loaders.mediaLoader"></div>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID == 0 &amp;&amp; !Loaders.mediaLoader">Create VideoGame</h2>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID != 0 &amp;&amp; !Loaders.mediaLoader">Details of VideoGame: {{SelectedModel.mediaCode + " - " + SelectedModel.mediaTitle}} </h2>
+    <div class="panel panel-primary" style="margin-bottom: 30px;" ng-show="!Loaders.mediaLoader">
+        <div class="panel-heading">VideoGame Details</div>
+        <div class="panel-body">
+            <form class="form-inline" method="post" role="form" name="MediaForm" ng-submit="updateSelectedMedia()" novalidate="novalidate">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="thumbnail">
+                            <img style="max-width: 300px; max-height: 240px;" ng-src="{{SelectedModel.mediaImageBase64}}" />
+                            <div class="caption">
+                                <input file-read="SelectedModel.mediaImageBase64" class="btn btn-default" style="margin: 0 auto; width: 50%;" type="file" accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="MediaCode">VideoGame Code:</label>
+                        <input type="text" class="form-control" name="MediaCode" style="width: 90%;" id="MediaCode" ng-model="SelectedModel.mediaCode" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaCode.$error.required">VideoGame Code is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 5%;">
+                        <label for="MediaTitle">VideoGame Title:</label>
+                        <input type="text" class="form-control" style="width: 90%;" name="MediaTitle" id="MediaTitle" ng-model="SelectedModel.mediaTitle" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaTitle.$error.required">VideoGame Title is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-10">
+                        <label for="MediaDescription">Description:</label>
+                        <textarea rows="10" cols="70" style="width: 90%; display: block;" class="form-control" id="MediaDescription" ng-model="SelectedModel.mediaDescription"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-4">
+                        <label for="Manufacturer">Manufacturer:</label>
+                        <input type="text" style="width: 90%;" class="form-control" name="Manufacturer" id="Manufacturer" ng-model="SelectedModel.manufacturer" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Manufacturer.$error.required">Video Game's Manufacturer is required</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="Price">Price:</label>
+                        <input type="number" style="width: 90%; display: block;" class="form-control" id="Price" name="Price" ng-model="SelectedModel.price" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Price.$error.required"></span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="MediaReleaseDate">ReleaseDate:</label>
+                        <input type="date" style="width: 90%;" class="form-control" name="MediaReleaseDate" id="MediaReleaseDate" ng-model="SelectedModel.releaseDate" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaReleaseDate.$error.required">Release Date of VideoGame is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-4">
+                        <label for="Developers">Developers:</label>
+                        <input type="text" style="width: 90%;" class="form-control" name="Developers" id="Developers" ng-model="SelectedModel.developers" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Developers.$error.required">Video Game's Developers are required</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="Publisher">Publisher:</label>
+                        <input type="text" style="width: 90%;" class="form-control" name="Publisher" id="Publisher" ng-model="SelectedModel.publisher" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Publisher.$error.required">Video Game's Publisher is required</span>
+                    </div>
+                    <div class="col-sm-4" style="margin-top: 3px;">
+                        <label for="Platforms">Platforms:</label>
+                        <select multiple="multiple" style="width: 90%;" class="custom-select" id="Platforms" ng-model="SelectedModel.platforms" required="required"></select>
+                        <span style="color: red;"></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px; float: right; margin-right: 5%;">
+                    <input type="submit" name="SaveButton" id="SaveButton" class="btn btn-primary" value="Save" ng-if="!Loaders.saveLoader" />
+                    <div id="save-loader" class="loader" ng-if="Loaders.saveLoader"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var MediaID = /*[[${mediaID}]]*/ 0;
+    var platformsRaw = /*[[${platforms}]]*/ [];
+    var Platforms = $.map(platformsRaw, function(platform) {
+        return { id: platform.platformID, text: platform.platformDescription };
+    });
+    
+    var params = {
+        searchUrl: '/api/VideoGameApi/GetVideoGame',
+        updateSelected: '/api/VideoGameApi/UpdateVideoGame'
+    };
+
+    $('#Platforms').select2({
+        placeholder: 'Select VideoGame Languages..',
+        data: Platforms,
+        multiple: true
+    });
+
+    function RefreshSelectors(){
+        $('.custom-select').trigger('change');
+    }
+
+    var module = angular.module('VideoGameApp', []).config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension):/);
+    }]);
+    module.value('params', params);
+    module.value('type', 1);
+    module.value('mediaID', MediaID);
+    MediaService(module, 'VideoGameService');
+    MediaController(module, 'VideoGameController', 'VideoGameService');
+
+</script>

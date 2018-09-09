@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/layout_admin_loggedin"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="en">
+<head>
+    <title>User Profile</title>
+</head>
+<body background="resources/img/loggedin_background_image.jpg">
+<div class="container" ng-app="ProfileApp" ng-controller="ProfileController as ProCtrl">
+    <div id="model-loader" class="loader" ng-show="UserLoader"></div>
+    <div class="panel panel-primary" ng-show="!UserLoader">
+        <div class="panel-heading">
+            <h3 class="panel-title"><span sec:authentication="name"></span> Profile </h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline" method="post" role="form" name="UserForm" ng-submit="updateUserDetails()" novalidate="novalidate">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="thumbnail">
+                            <img style="max-width: 400px; max-height: 320px;" ng-src="{{SelectedUser.userImageBase64}}" />
+                            <div class="caption">
+                                <input file-read="SelectedUser.userImageBase64" class="btn btn-default" style="margin: 0 auto; width: 50%;" type="file" accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="UserFirstName">First Name:</label>
+                        <input type="text" class="form-control" style="width: 90%;" name="UserFirstName" id="UserFirstName" ng-model="SelectedUser.firstName" required="required"/>
+                        <span style="color: red;" ng-show="UserForm.$submitted &amp;&amp; UserForm.UserFirstName.$error.required">First Name is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 5%;">
+                        <label for="UserLastName">Last Name:</label>
+                        <input type="text" class="form-control" style="width: 90%;" name="UserLastName" id="UserLastName" ng-model="SelectedUser.lastName" required="required"/>
+                        <span style="color: red;" ng-show="UserForm.$submitted &amp;&amp; UserForm.UserLastName.$error.required">Last Name is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 5%;">
+                        <label for="UserEmail">Email:</label>
+                        <input type="email" class="form-control" style="width: 90%; display: block;" name="UserEmail" id="UserEmail" ng-model="SelectedUser.email" required="required"/>
+                        <span style="color: red;" ng-show="UserForm.$submitted &amp;&amp; UserForm.UserEmail.$error.required">Email is required</span>
+                    </div>
+                    <div class="row" style="margin-top: 30px; float: right; margin-right: 5%;">
+                        <input type="submit" name="SaveButton" id="SaveButton" class="btn btn-primary" value="Save" ng-if="!SaveLoader" />
+                        <div id="save-loader" class="loader" ng-if="SaveLoader"></div>
+                    </div>
+                </div>
+            </form>
+            <!--<div class="row">-->
+            <!--<div class="col-sm-6 col-md-3">-->
+            <!--</div>-->
+            <!--<div class="col-sm-6 col-md-3">-->
+            <!--<label>Thumbnail label</label>-->
+            <!--<input type="text" class="form-control" placeholder="Search for..." />-->
+            <!--</div>-->
+            <!--<div class="col-sm-6 col-md-3">-->
+            <!--<label>Thumbnail label</label>-->
+            <!--<input type="text" class="form-control" placeholder="Search for..." />-->
+            <!--</div>-->
+            <!--<div class="col-sm-6 col-md-3">-->
+            <!--<label>Thumbnail label</label>-->
+            <!--<input type="text" class="form-control" placeholder="Search for..." />-->
+            <!--</div>-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+
+    var params = {
+        searchUserURL: '/api/ProfileApi/GetUserDetails',
+        updateUserURL: '/api/ProfileApi/UpdateUserDetails'
+    };
+
+    var module = angular.module('ProfileApp', []).config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension):/);
+    }]);
+    module.value('params', params);
+    ProfileService(module, 'ProfileService');
+    ProfileController(module, 'ProfileController', 'ProfileService');
+
+</script>

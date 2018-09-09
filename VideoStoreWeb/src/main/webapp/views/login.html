@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:data="https://github.com/mxab/thymeleaf-extras-data-attribute"
+      layout:decorator="layouts/layout_notloggedin"
+      lang="en">
+<head>
+    <title>Log in</title>
+</head>
+<body background="resources/img/login_register_background_image.jpg">
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" ng-app="UserForm">
+            <div class="panel panel-login" ng-controller="LoginController as lctr">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a style="cursor: pointer;" class="active" ng-disabled="DisableButton" id="login-form-link">Login</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a style="cursor: pointer;" ng-disabled="DisableButton" id="register-form-link">Register</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form id="login-form" method="post" role="form" style="display: block;" ng-submit="LoginUser()" name="LoginForm" novalidate="novalidate">
+                                <div class="form-group">
+                                    <label for="LoginUsername">Username</label>
+                                    <input type="text" name="LoginUsername" id="LoginUsername" tabindex="1" class="form-control" placeholder="Username" value="" ng-model="LoginModel.username" required="required" />
+                                    <span style="color: red;" ng-show="LoginForm.$submitted &amp;&amp; LoginForm.LoginUsername.$error.required">Username is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="LoginPassword">Password</label>
+                                    <input type="password" name="LoginPassword" id="LoginPassword" tabindex="2" class="form-control" placeholder="Password" ng-model="LoginModel.password" required="required" />
+                                    <span style="color: red" ng-show="LoginForm.$submitted &amp;&amp; LoginForm.LoginPassword.$error.required">Password is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" name="login-submit" id="login-submit" tabindex="3" class="form-control btn btn-login" ng-disabled="DisableButton" value="Log In" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <form id="register-form" method="post" role="form" style="display: none;" ng-submit="RegisterUser()" name="RegisterForm" novalidate="novalidate">
+                                <div class="form-group">
+                                    <label for="RegisterUsername">Username*</label>
+                                    <input type="text" ng-model="RegisterModel.username" name="RegisterUsername" id="RegisterUsername" tabindex="1" class="form-control" placeholder="Username" value="" required="required" />
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.RegisterUsername.$error.required">Username is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RegisterPassword">Password*</label>
+                                    <input type="password" ng-model="RegisterModel.password" name="RegisterPassword" id="RegisterPassword" tabindex="2" class="form-control" placeholder="Password" required="required" ng-pattern="/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$!%*#?])[A-Za-z\d$!%*#?]{6,15}$/"/>
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.RegisterPassword.$error.required">Password is required</span>
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.RegisterPassword.$error.pattern">Password should be between 6 and 15 characters and should contain at least 1 letter, 1 number and 1 special character</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RegisterFirstName">First Name*</label>
+                                    <input type="text" ng-model="RegisterModel.firstName" name="FirstName" id="RegisterFirstName" tabindex="3" class="form-control" placeholder="First Name" required="required"/>
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.FirstName.$error.required">First Name is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RegisterLastName">Last Name*</label>
+                                    <input type="text" ng-model="RegisterModel.lastName" name="LastName" id="RegisterLastName" tabindex="4" class="form-control" placeholder="Last Name" required="required"/>
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.LastName.$error.required">Last Name is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RegisterEmail">E-mail*</label>
+                                    <input type="email" ng-model="RegisterModel.email" name="Email" id="RegisterEmail" tabindex="5" class="form-control" placeholder="Email Address" value="" required="required"/>
+                                    <span style="color: red" ng-show="RegisterForm.$submitted &amp;&amp; RegisterForm.Email.$error.required">E-mail is required</span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <button name="register-submit" id="register-submit" tabindex="6" class="form-control btn btn-register" ng-disabled="DisableButton">Register</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="user_loader" class="loader" style="text-align: center;" ng-show="ShowLoader"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    var AuthModule = angular.module('UserForm', []);
+    LoginService(AuthModule, 'LoginService');
+    LoginController(AuthModule, 'LoginController', 'LoginService');
+</script>

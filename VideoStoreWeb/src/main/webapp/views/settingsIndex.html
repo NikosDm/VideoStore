@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Settings</title>
+</head>
+<body background="resources/img/loggedin_background_image.jpg">
+<div class="container" ng-app="SettingsApp" ng-controller="SettingsController as SetCtrl">
+    <div id="model-loader" class="loader" ng-show="SettingsLoader"></div>
+    <div class="row" ng-if="!SettingsLoader">
+        <div class="col-md-12 bhoechie-tab-container" style="margin-left: 0px !important;">
+            <div class="col-md-3 bhoechie-tab-menu">
+                <div class="list-group">
+                    <a class="list-group-item text-center" ng-class="{ active: isSet(1) }" ng-click="setTab(1)" style="cursor: pointer;">
+                        <span class="glyphicon glyphicon-cd"></span><br/>Platforms
+                    </a>
+                    <a class="list-group-item text-center" ng-class="{ active: isSet(2) }" ng-click="setTab(2)" style="cursor: pointer;">
+                        <span class="glyphicon glyphicon-film"></span><br/>Movie Categories
+                    </a>
+                    <a class="list-group-item text-center" ng-class="{ active: isSet(3) }" ng-click="setTab(3)" style="cursor: pointer;">
+                        <span class="glyphicon glyphicon-volume-up"></span><br/>Movie Languages
+                    </a>
+                    <a class="list-group-item text-center" ng-class="{ active: isSet(4) }" ng-click="setTab(4)" style="cursor: pointer;">
+                        <span class="glyphicon glyphicon-music"></span><br/>Music Genres
+                    </a>
+                    <a class="list-group-item text-center" ng-class="{ active: isSet(5) }" ng-click="setTab(5)" style="cursor: pointer;">
+                        <span class="glyphicon glyphicon-user"></span><br/>User Roles
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9 bhoechie-tab">
+                <div class="bhoechie-tab-content" ng-class="{ active: isSet(1) }" ng-show="isSet(1)">
+                    <div class="row">
+                        <a class="text-center" style="display: block; float: right; margin-right: 5%; font-size: large; cursor: pointer;" ng-click="addPlatform()" title="Add Platform">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="text-center" style="display: block; float: right; margin-right: 3%; font-size: large; cursor: pointer;" ng-click="updatePlatformList(Settings.platforms)" title="Save Platforms">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </a>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Developers</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="platform in Settings.platforms">
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="platform.platformDescription" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !platform.IsDescriptionValid">Description is required</span>
+                                </td>
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="platform.developers" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !platform.IsDevelopersValid">Developers are required</span>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="updateSelectedPlatform(platform)" style="font-size: large; cursor: pointer;" title="Save Platform">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="InitializeDeleteModal(platform.platformID, platform.platformDescription)" style="font-size: large; cursor: pointer;" data-toggle="modal" data-target="#DeletePlatformModal" title="Delete Platform">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="DeletePlatformModal" tabindex="-1" role="dialog" aria-labelledby="DeletePlatformModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Movie</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" ng-bind-html="SelectedSettingDelete.SettingDescription">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deletePlatform(SelectedSettingDelete.SettingID)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bhoechie-tab-content" ng-class="{ active: isSet(2) }" ng-show="isSet(2)">
+                    <div class="row">
+                        <a class="text-center" style="display: block; float: right; margin-right: 5%; font-size: large; cursor: pointer;" ng-click="addMovieCategory()" title="Add Movie Category">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="text-center" style="display: block; float: right; margin-right: 3%; font-size: large; cursor: pointer;" ng-click="updateMovieCategoryList(Settings.movieCategories)" title="Save Movie Categories">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </a>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="movieCategory in Settings.movieCategories">
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="movieCategory.movieCategoryName" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !movieCategory.IsValid">Name is required</span>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="updateSelectedMovieCategory(movieCategory)" style="font-size: large; cursor: pointer;" title="Save Movie Category">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="InitializeDeleteModal(movieCategory.movieCategoryID, movieCategory.movieCategoryName)" style="font-size: large; cursor: pointer;" data-toggle="modal" data-target="#DeleteMovieCategoryModal" title="Delete Movie Category">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="DeleteMovieCategoryModal" tabindex="-1" role="dialog" aria-labelledby="DeleteMovieCategoryModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Movie</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" ng-bind-html="SelectedSettingDelete.SettingDescription">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteMovieCategory(SelectedSettingDelete.SettingID)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bhoechie-tab-content" ng-class="{ active: isSet(3) }" ng-show="isSet(3)">
+                    <div class="row">
+                        <a class="text-center" style="display: block; float: right; margin-right: 5%; font-size: large; cursor: pointer;" ng-click="addMovieLanguage()" title="Add Movie Language">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="text-center" style="display: block; float: right; margin-right: 3%; font-size: large; cursor: pointer;" ng-click="updateMovieLanguageList(Settings.movieLanguages)" title="Save Movie Languages">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </a>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="movieLanguage in Settings.movieLanguages">
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="movieLanguage.movieLanguageName" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !movieLanguage.IsValid">Description is required</span>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="updateSelectedMovieLanguage(movieLanguage)" style="font-size: large; cursor: pointer;" title="Save Movie Language">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="InitializeDeleteModal(movieLanguage.movieLanguageID, movieLanguage.movieLanguageName)" style="font-size: large; cursor: pointer;" data-toggle="modal" data-target="#DeleteMovieLanguageModal" title="Delete Movie Language">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="DeleteMovieLanguageModal" tabindex="-1" role="dialog" aria-labelledby="DeleteMovieLanguageModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Movie</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" ng-bind-html="SelectedSettingDelete.SettingDescription">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteMovieLanguage(SelectedSettingDelete.SettingID)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bhoechie-tab-content" ng-class="{ active: isSet(4) }" ng-show="isSet(4)">
+                    <div class="row">
+                        <a class="text-center" style="display: block; float: right; margin-right: 5%; font-size: large; cursor: pointer;" ng-click="addMusicGenre()" title="Add Music Genre">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="text-center" style="display: block; float: right; margin-right: 3%; font-size: large; cursor: pointer;" ng-click="updateMusicGenreList(Settings.musicGenres)" title="Save Music Genres">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </a>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="musicGenre in Settings.musicGenres">
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="musicGenre.genreDescription" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !musicGenre.IsValid">Description is required</span>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="updateSelectedMusicGenre(musicGenre)" style="font-size: large; cursor: pointer;" title="Save Music Genre">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="InitializeDeleteModal(musicGenre.genreID, musicGenre.genreDescription)" style="font-size: large; cursor: pointer;" data-toggle="modal" data-target="#DeleteMusicGenreModal" title="Delete Music Genre">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="DeleteMusicGenreModal" tabindex="-1" role="dialog" aria-labelledby="DeleteMusicGenreModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Movie</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" ng-bind-html="SelectedSettingDelete.SettingDescription">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteMovieLanguage(SelectedSettingDelete.SettingID)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bhoechie-tab-content" ng-class="{ active: isSet(5) }" ng-show="isSet(5)">
+                    <div class="row">
+                        <a class="text-center" style="display: block; float: right; margin-right: 5%; font-size: large; cursor: pointer;" ng-click="addUserRole()" title="Add User Role">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="text-center" style="display: block; float: right; margin-right: 3%; font-size: large; cursor: pointer;" ng-click="updateUserRoleList(Settings.userRoles)" title="Save User Roles">
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </a>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 10px;">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="userRole in Settings.userRoles">
+                                <td>
+                                    <input type="text" tabindex="1" class="form-control" ng-model="userRole.roleName" required="required" />
+                                    <span style="color: red;" ng-show="SaveValidation &amp;&amp; !userRole.IsValid">Name is required</span>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="updateSelectedUserRole(userRole)" style="font-size: large; cursor: pointer;" title="Save User Role">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="text-center" ng-click="InitializeDeleteModal(userRole.roleID, userRole.roleName)" style="font-size: large; cursor: pointer;" data-toggle="modal" data-target="#DeleteUserRoleModal" title="Delete User Role">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal fade" id="DeleteUserRoleModal" tabindex="-1" role="dialog" aria-labelledby="DeleteUserRoleModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Movie</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" ng-bind-html="SelectedSettingDelete.SettingDescription">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteStoreUserRole(SelectedSettingDelete.SettingID)">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+
+    var module = angular.module('SettingsApp', ['ngSanitize']);
+    SettingsService(module, 'SettingsService');
+    SettingsController(module, 'SettingsController', 'SettingsService');
+
+</script>

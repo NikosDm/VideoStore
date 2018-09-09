@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:data="https://github.com/mxab/thymeleaf-extras-data-attribute"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Music Disks</title>
+</head>
+<body background="/resources/img/layout_media_music_disks.jpg">
+<div class="container" ng-app="MusicDiskApp" ng-controller="MusicDiskController as MusicDiskCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Music Disk List</div>
+        <div class="panel-body">
+            <div id="list-loader" class="loader" ng-show="MediaListLoader"></div>
+            <div class="row" ng-show="!MediaListLoader">
+                <button id="NewMusicDisk" class="btn btn-active" type="button" style="margin-left: 15px;" ng-click="AddOrEditMedia(0)">
+                    Add New Music Disk
+                </button>
+            </div>
+            <div class="table-responsive" ng-show="!MediaListLoader" style="margin-top: 10px;">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Title</th>
+                        <th>Release Date</th>
+                        <th>Musician</th>
+                        <th>Genres</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="musicDisk in ModelList">
+                        <td ng-bind="musicDisk.mediaCode"></td>
+                        <td ng-bind="musicDisk.mediaTitle"></td>
+                        <td ng-bind="SetDateFormat(musicDisk.releaseDate)"></td>
+                        <td ng-bind="musicDisk.musician"></td>
+                        <td ng-bind="musicDisk.musicGenresNames"></td>
+                        <td>
+                            <a class="btn btn-success" ng-click="AddOrEditMedia(musicDisk.mediaID)" type="button">Edit</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#DeleteModal" ng-click="InitializeDeleteModal(musicDisk.mediaID, musicDisk.mediaCode, musicDisk.mediaTitle)">Delete</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Music Disk</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" ng-bind-html="SelectedDeleteMedia.MediaDescription">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="deleteData(SelectedDeleteMedia.MediaID)">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var params = {
+        searchUrl: '/api/MusicDiskApi/ListMusicDisks',
+        updateListUrl: '/api/MusicDiskApi/UpdateMusicDisks',
+        updateSelected: '/api/MusicDiskApi/UpdateGridMusicDisk',
+        deleteSelected: '/api/MusicDiskApi/DeleteMusicDisk'
+    };
+
+    var module = angular.module('MusicDiskApp', ['ngSanitize']);
+    module.value('params', params);
+    module.value('type', 3);
+    GridService(module, 'MusicDiskService');
+    GridController(module, 'MusicDiskController', 'MusicDiskService');
+
+</script>

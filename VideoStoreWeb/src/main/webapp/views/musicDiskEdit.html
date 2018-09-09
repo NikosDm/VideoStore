@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Edit Music Disk</title>
+</head>
+<body background="/resources/img/layout_media_music_disks.jpg">
+<div class="container" ng-app="MusicDiskApp" ng-controller="MusicDiskController as MusicDiskCtrl">
+    <div id="model-loader" class="loader" ng-show="Loaders.mediaLoader"></div>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID == 0 &amp;&amp; !Loaders.mediaLoader">Create Music Disk</h2>
+    <h2 style="color: white;" ng-show="SelectedModel.mediaID != 0 &amp;&amp; !Loaders.mediaLoader">Details of Music Disk: {{SelectedModel.mediaCode + " - " + SelectedModel.mediaTitle}} </h2>
+    <div class="panel panel-primary" style="margin-bottom: 30px;" ng-show="!Loaders.mediaLoader">
+        <div class="panel-heading">Music Disk Details</div>
+        <div class="panel-body">
+            <form class="form-inline" method="post" role="form" name="MediaForm" ng-submit="updateSelectedMedia()" novalidate="novalidate">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="thumbnail">
+                            <img style="max-width: 300px; max-height: 240px;" ng-src="{{SelectedModel.mediaImageBase64}}" />
+                            <div class="caption">
+                                <input file-read="SelectedModel.mediaImageBase64" class="btn btn-default" style="margin: 0 auto; width: 50%;" type="file" accept="image/*"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="MediaCode">MusicDisk Code:</label>
+                        <input type="text" class="form-control" name="MediaCode" style="width: 90%;" id="MediaCode" ng-model="SelectedModel.mediaCode" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaCode.$error.required">MusicDisk Code is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 5%;">
+                        <label for="MediaTitle">MusicDisk Title:</label>
+                        <input type="text" class="form-control" style="width: 90%;" name="MediaTitle" id="MediaTitle" ng-model="SelectedModel.mediaTitle" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaTitle.$error.required">MusicDisk Title is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-10">
+                        <label for="MediaDescription">Description:</label>
+                        <textarea rows="10" cols="70" style="width: 90%; display: block;" class="form-control" id="MediaDescription" ng-model="SelectedModel.mediaDescription"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-6">
+                        <label for="Price">Price:</label>
+                        <input type="number" style="width: 90%; display: block;" class="form-control" id="Price" name="Price" ng-model="SelectedModel.price" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Price.$error.required"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="MediaReleaseDate">ReleaseDate:</label>
+                        <input type="date" style="width: 90%;" class="form-control" name="MediaReleaseDate" id="MediaReleaseDate" ng-model="SelectedModel.releaseDate" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.MediaReleaseDate.$error.required">Release Date of MusicDisk is required</span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px;">
+                    <div class="col-sm-6">
+                        <label for="Musician">Musician:</label>
+                        <input type="text" style="width: 90%;" class="form-control" name="Musician" id="Musician" ng-model="SelectedModel.musician" required="required"/>
+                        <span style="color: red;" ng-show="MediaForm.$submitted &amp;&amp; MediaForm.Musician.$error.required">Musician is required</span>
+                    </div>
+                    <div class="col-sm-6" style="margin-top: 3px;">
+                        <label for="MusicGenres">Music Genres:</label>
+                        <select multiple="multiple" style="width: 90%;" class="custom-select" id="MusicGenres" ng-model="SelectedModel.musicGenres" required="required"></select>
+                        <span style="color: red;"></span>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 30px; float: right; margin-right: 5%;">
+                    <input type="submit" name="SaveButton" id="SaveButton" class="btn btn-primary" value="Save" ng-if="!Loaders.saveLoader" />
+                    <div id="save-loader" class="loader" ng-if="Loaders.saveLoader"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var MediaID = /*[[${mediaID}]]*/ 0;
+    var musicGenresRaw = /*[[${musicGenres}]]*/ [];
+    var MusicGenres = $.map(musicGenresRaw, function(musicGenre) {
+        return { id: musicGenre.genreID, text: musicGenre.genreDescription };
+    });
+
+    var params = {
+        searchUrl: '/api/MusicDiskApi/GetMusicDisk',
+        updateSelected: '/api/MusicDiskApi/UpdateMusicDisk'
+    };
+
+    $('#MusicGenres').select2({
+        placeholder: 'Select Music Genres..',
+        data: MusicGenres,
+        multiple: true
+    });
+
+    function RefreshSelectors(){
+        $('.custom-select').trigger('change');
+    }
+
+    var module = angular.module('MusicDiskApp', []).config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension):/);
+    }]);
+    module.value('params', params);
+    module.value('type', 3);
+    module.value('mediaID', MediaID);
+    MediaService(module, 'MusicDiskService');
+    MediaController(module, 'MusicDiskController', 'MusicDiskService');
+
+</script>

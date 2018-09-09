@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layouts/layout_admin_loggedin"
+      lang="en">
+<head>
+    <title>Search Medias</title>
+</head>
+<body background="resources/img/loggedin_background_image.jpg">
+<div class="container" ng-app="SearchMediaApp" ng-controller="SearchMediaController as SearchMediaCtrl">
+<div id="model-loader" class="loader" ng-show="mediasLoader"></div>
+<div class="panel panel-primary" ng-show="!mediasLoader">
+    <div class="panel-heading">
+        <h3 class="panel-title">Medias</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="media in MediaList">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="thumbnail">
+                            <img ng-src="{{media.mediaImageBase64}}" />
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h3>{{media.mediaCode + " - " + media.mediaTitle}}</h3>
+                        <h4 ng-bind="DisplayMediaType(media.mediaType)"></h4>
+                        <h4 ng-bind="SetReleaseDateWithFormat(media.releaseDate)"></h4>
+                        <h5 ng-bind="media.mediaDescription"></h5>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-success" ng-click="ViewDetails(media.mediaType, media.mediaID)" type="button">View Details</a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+</body>
+</html>
+<script th:inline="javascript">
+
+    var params = {
+        searchUrl: '/api/SearchMediaApi/SearchMedias'
+    };
+
+    var searchParam = /*[[${searchParam}]]*/ '';
+
+    var module = angular.module('SearchMediaApp', []).config(['$compileProvider', function ($compileProvider) {
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension):/);
+    }]);
+    module.value('params', params);
+    module.value('searchParam', searchParam);
+    SearchMediaService(module, 'SearchMediaService');
+    SearchMediaController(module, 'SearchMediaController', 'SearchMediaService');
+
+</script>

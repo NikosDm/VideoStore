@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <link type="text/css" rel='stylesheet' href='/resources/css/bootstrap.min.css' />
+    <link type="text/css" rel='stylesheet' href='/resources/css/bootstrap-theme.min.css' />
+    <link type="text/css" rel='stylesheet' href='/resources/css/select2.min.css' />
+    <link rel='stylesheet' href='/resources/css/Loader.css' />
+    <link rel='stylesheet' href='/resources/css/bhoechie-tab.css' />
+    <script type="text/javascript" src="/resources/js/jquery-3.1.1.min.js"/>
+    <script type="text/javascript" src="/resources/js/canvasjs.min.js"/>
+    <script type="text/javascript" src="/resources/js/jquery.canvasjs.min.js" />
+    <script type="text/javascript" src="/resources/js/bootstrap.min.js"/>
+    <script type="text/javascript" src="/resources/js/toastr.min.js" />
+    <script type="text/javascript" src="/resources/js/select2.min.js" />
+    <script type="text/javascript" src="/resources/js/angular.js" />
+    <script type="text/javascript" src="/resources/js/angular-animate.js" />
+    <script type="text/javascript" src="/resources/js/angular-aria.js" />
+    <script type="text/javascript" src="/resources/js/angular-messages.js" />
+    <script type="text/javascript" src="/resources/js/angular-loader.js" />
+    <script type="text/javascript" src="/resources/js/angular-sanitize.js" />
+    <script type="text/javascript" src="/resources/js/moment.js" />
+    <script type="text/javascript" src="/resources/angular/controller/gridcontroller.js" />
+    <script type="text/javascript" src="/resources/angular/service/gridservice.js" />
+    <script type="text/javascript" src="/resources/angular/controller/mediacontroller.js" />
+    <script type="text/javascript" src="/resources/angular/service/media_service.js" />
+    <script type="text/javascript" src="/resources/angular/model/MediaCtr.js" />
+    <script type="text/javascript" src="/resources/angular/controller/search_media_controller.js" />
+    <script type="text/javascript" src="/resources/angular/service/search_media_service.js" />
+    <script type="text/javascript" src="/resources/angular/model/SearchMediaCtr.js" />
+    <script type="text/javascript" src="/resources/angular/controller/profile_controller.js" />
+    <script type="text/javascript" src="/resources/angular/service/profile_service.js" />
+    <script type="text/javascript" src="/resources/angular/model/ProfileCtr.js" />
+    <script type="text/javascript" src="/resources/angular/model/MediaStatisticsCtr.js" />
+    <script type="text/javascript" src="/resources/angular/controller/statistics_controller.js" />
+    <script type="text/javascript" src="/resources/angular/service/statistics_service.js" />
+    <script type="text/javascript" src="/resources/angular/model/UserRoleStatisticsCtr.js" />
+    <script type="text/javascript" src="/resources/angular/controller/settings_controller.js" />
+    <script type="text/javascript" src="/resources/angular/service/settings_service.js" />
+    <script type="text/javascript" src="/resources/angular/model/SettingsCtrs.js" />
+    <script type="text/javascript" src="/resources/angular/util/Utilities.js" />
+</head>
+<header>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" th:href="@{/home}">Video Store</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a th:href="@{/home}">Home</a></li>
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Media <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/movie/index}">Movies</a></li>
+                        <li><a th:href="@{/musicDisk/index}">Music Disks</a></li>
+                        <li><a th:href="@{/videoGame/index}">Video Games</a></li>
+                    </ul>
+                </li>
+                <li><a th:href="@{/statistics}">Statistics</a></li>
+                <li><a th:href="@{/settings}">Settings</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" th:action="@{/searchMedia}" th:method="post">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Search Media..." th:name="search" th:value="${search}" />
+                </div>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a th:href="@{/profile}">Welcome <span sec:authentication="name"></span></a></li>
+                <li><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+</html>
