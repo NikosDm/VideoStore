@@ -23,11 +23,7 @@ gen
 .idea/workspace.xml
 VideoStore.iml
 VideoStoreApi/VideoStoreApi.iml
-VideoStoreApi/src/main/webapp/
-VideoStoreApi/src/test/
 VideoStoreApi/target/
 VideoStoreWeb/VideoStoreWeb.iml
-VideoStoreWeb/src/main/resources/
-VideoStoreWeb/src/test/
 VideoStoreWeb/target/
 src/
